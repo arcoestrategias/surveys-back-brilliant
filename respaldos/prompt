@@ -1,0 +1,21 @@
+Crea un backend en Node.js con PostgreSQL y una estructura de carpetas escalable. El proyecto debe incluir:
+
+1. **Estructura de carpetas**:
+   - `config/`: Configuración de la base de datos
+   - `controllers/`: Controladores para manejar la lógica de negocio
+   - `models/`: Modelos de datos
+   - `routes/`: Definición de rutas de la API
+   - `middleware/`: Middleware para autenticación y otras funcionalidades
+   - `utils/`: Funciones auxiliares
+   - `.env`: Archivo para las variables de entorno
+   - `app.js`: Archivo principal para configurar y lanzar el servidor
+
+2. **Contenido de `.env`**:
+   ```plaintext
+   PORT=5000
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=tu_usuario
+   DB_PASSWORD=tu_contraseña
+   DB_NAME=tu_basededatos
+   JWT_SECRET=mi_clave_secreta

@@ -1,0 +1,170 @@
+-- Crear la función que actualiza el timestamp
+CREATE OR REPLACE FUNCTION actualizar_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.actualizado_en = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Tabla de empresas
+CREATE TABLE empresas (
+    id_empresa SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de empresas
+CREATE TRIGGER trigger_empresas
+BEFORE UPDATE ON empresas
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla de roles
+CREATE TABLE roles (
+    id_rol SERIAL PRIMARY KEY,
+    tipo VARCHAR(50) UNIQUE NOT NULL,
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de roles
+CREATE TRIGGER trigger_roles
+BEFORE UPDATE ON roles
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla de usuarios
+CREATE TABLE usuarios (
+    id_usuario SERIAL PRIMARY KEY,
+    id_empresa INT REFERENCES empresas(id_empresa),
+    id_rol INT REFERENCES roles(id_rol),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    nombres VARCHAR(255) NOT NULL,
+    apellidos VARCHAR(255) NOT NULL,
+    cedula VARCHAR(15) NOT NULL,
+    fecha_nacimiento DATE,
+    genero VARCHAR(50),
+    telefono VARCHAR(15),
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de usuarios
+CREATE TRIGGER trigger_usuarios
+BEFORE UPDATE ON usuarios
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla de estudios
+CREATE TABLE estudios (
+    id_estudio SERIAL PRIMARY KEY,
+    id_empresa INT REFERENCES empresas(id_empresa),
+    nombre VARCHAR(255) NOT NULL,
+    descripcion VARCHAR(255) UNIQUE NOT NULL,
+    fecha_estudio VARCHAR(255) NOT NULL,
+    finalizado BOOLEAN DEFAULT FALSE,
+    es_arquetipo BOOLEAN DEFAULT FALSE,
+    es_comportamiento BOOLEAN DEFAULT FALSE,
+    es_interes BOOLEAN DEFAULT FALSE,
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de estudios
+CREATE TRIGGER trigger_estudios
+BEFORE UPDATE ON estudios
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla de accesos a encuestas
+CREATE TABLE accesos_encuestas (
+    id_acceso SERIAL PRIMARY KEY,
+    id_usuario INT REFERENCES usuarios(id_usuario),
+    id_estudio INT REFERENCES estudios(id_estudio),
+    clave_acceso VARCHAR(255) UNIQUE NOT NULL,
+    arquetipos_completada BOOLEAN DEFAULT FALSE,
+    comportamientos_completada BOOLEAN DEFAULT FALSE,
+    intereses_completada BOOLEAN DEFAULT FALSE,
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de accesos a encuestas
+CREATE TRIGGER trigger_accesos_encuestas
+BEFORE UPDATE ON accesos_encuestas
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla para respuestas de Arquetipos
+CREATE TABLE respuestas_arquetipos (
+    id_respuesta_arquetipo SERIAL PRIMARY KEY,
+    id_usuario INT REFERENCES usuarios(id_usuario),
+    id_estudio INT REFERENCES estudios(id_estudio),
+    id_pregunta INT,
+    respuesta VARCHAR(255) NOT NULL,
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de respuestas de Arquetipos
+CREATE TRIGGER trigger_respuestas_arquetipos
+BEFORE UPDATE ON respuestas_arquetipos
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla para respuestas de Comportamientos
+CREATE TABLE respuestas_comportamientos (
+    id_respuesta_comportamiento SERIAL PRIMARY KEY,
+    id_usuario INT REFERENCES usuarios(id_usuario),
+    id_estudio INT REFERENCES estudios(id_estudio),
+    id_grupo INT,
+    orden_1 VARCHAR(255),
+    orden_2 VARCHAR(255),
+    orden_3 VARCHAR(255),
+    orden_4 VARCHAR(255),
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de respuestas de Comportamientos
+CREATE TRIGGER trigger_respuestas_comportamientos
+BEFORE UPDATE ON respuestas_comportamientos
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Tabla para respuestas de Intereses
+CREATE TABLE respuestas_intereses (
+    id_respuesta_interes SERIAL PRIMARY KEY,
+    id_usuario INT REFERENCES usuarios(id_usuario),
+    id_estudio INT REFERENCES estudios(id_estudio),
+    id_grupo INT,
+    orden_1 VARCHAR(255),
+    orden_2 VARCHAR(255),
+    orden_3 VARCHAR(255),
+    orden_4 VARCHAR(255),
+    orden_5 VARCHAR(255),
+    orden_6 VARCHAR(255),
+    es_activo BOOLEAN DEFAULT TRUE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Crear el trigger para la tabla de respuestas de Intereses
+CREATE TRIGGER trigger_respuestas_intereses
+BEFORE UPDATE ON respuestas_intereses
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_timestamp();
+
+-- Índices adicionales para mejorar el rendimiento
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE INDEX idx_estudios_fecha_estudio ON estudios(fecha_estudio);
