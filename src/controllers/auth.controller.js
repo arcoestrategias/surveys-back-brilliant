@@ -65,7 +65,7 @@ export const loginUser = async (req, res) => {
                 nombre: company.nombre
             },
             nombre_usuario: `${user.nombres} ${user.apellidos}`,
-            id_usuaro: user.id_usuario,
+            id_usuario: user.id_usuario,
             id_estudio: access.id_estudio,
             codigo_acceso: access.clave_acceso
         });
